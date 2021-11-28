@@ -54,5 +54,4 @@ This will download the sorce for the app
 ### Install Go && C
 
 - Install [Go](https://golang.org/)
-- Install [C](https://sourceforge.net/projects/mingw-w64/files/Toolchains%20targetting%20Win32/Personal%20Builds/mingw-builds/installer/mingw-w64-install.exe/download) 
-> (and add to path, install 64 bit)
+- Install [C](https://sourceforge.net/projects/mingw-w64/files/Toolchains%20targetting%20Win32/Personal%20Builds/mingw-builds/installer/mingw-w64-install.exe/download) (and add to path, install 64 bit)
