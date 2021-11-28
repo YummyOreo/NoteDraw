@@ -44,7 +44,7 @@ Title example:
 ### First download the files
 
 ```console
-$ git clone https://github.com/YummyOreo/NotDraw/ && cd NotDraw
+$ git clone https://github.com/YummyOreo/NotDraw/ && cd NotDraw/src
 ```
 
 This will download the sorce for the app
