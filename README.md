@@ -1,5 +1,5 @@
 
-<div align="center"><img src="></div>
+<div align="center"><img src=""></div>
 <h1 align="center">About NotDraw</h1>
 <h3 align="center"><a href="#about">About</a> · <a href="#how-to-contribute">How to contribute</a> · <a href="#how-to-run-the-app">How to run</a> · <a href="https://trello.com/b/CCdaLcA9">Trello</a> · <a href="FAQ.md">FAQ</a></h3>
 
