@@ -1,11 +1,9 @@
 
 <div align="center"><img src=""></div>
-<h1 align="center">About NotDraw</h1>
-<h3 align="center"><a href="#about">About</a> · <a href="#how-to-contribute">How to contribute</a> · <a href="#how-to-run-the-app">How to run</a> · <a href="https://trello.com/b/CCdaLcA9">Trello</a> · <a href="FAQ.md">FAQ</a></h3>
+<h1 align="center">About NoteDraw</h1>
+<h3 align="center"><a href="#about">About</a> · <a href="#how-to-contribute">How to contribute</a> · <a href="#how-to-run-the-app">How to run</a>
 
 ---
-
-# This is achived because I dont want to work on it anymore
 
 ## Structure
 
@@ -19,7 +17,7 @@ Only Ones that **Wont** go away (Not temporary)
 
 | Branch                                                     |           Description           |
 | :--------------------------------------------------------- | :-----------------------------: |
-| [master/main](https://github.com/Yummyoreo/NotDraw/) | The sorce code for the app |
+| [master/main](https://github.com/Yummyoreo/NoteDraw/) | The sorce code for the app |
 
 ## About
 
@@ -44,12 +42,10 @@ Title example:
 ### First download the files
 
 ```console
-$ git clone https://github.com/YummyOreo/NotDraw/ && cd NotDraw/src
+$ git clone https://github.com/YummyOreo/NoteDraw/ && cd NoteDraw/src
 ```
 
 This will download the sorce for the app
-
-### To run the api, [go here](https://github.com/OreoDivision/chat-house/blob/master/dinner/README.md)
 
 ### Install Go && C
 
