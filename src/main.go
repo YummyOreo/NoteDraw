@@ -5,7 +5,9 @@ import (
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/app"
-	"fyne.io/fyne/v2/widget"
+	"fyne.io/fyne/v2/theme"
+
+	widget "NotDraw/mods"
 )
 
 func main() {
@@ -21,11 +23,12 @@ func main() {
 
 	w.Resize(fyne.NewSize(float32(with*multiW), float32(height*multiH)))
 
-	buttonOne := widget.NewButton("name", func() {
-		fmt.Println("works")
-	})
+	w.SetContent(widget.MakeIcon(theme.AccountIcon()))
 
-	w.SetContent(buttonOne)
+	w.SetCloseIntercept(func() {
+		fmt.Println("closed")
+		w.Close()
+	})
 
 	w.ShowAndRun()
 
