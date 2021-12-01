@@ -2,10 +2,10 @@ package main
 
 import (
 	"fmt"
+	"image/color"
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/app"
-	"fyne.io/fyne/v2/theme"
 
 	widget "NotDraw/mods"
 )
@@ -23,7 +23,7 @@ func main() {
 
 	w.Resize(fyne.NewSize(float32(with*multiW), float32(height*multiH)))
 
-	w.SetContent(widget.MakeIcon(theme.AccountIcon()))
+	w.SetContent(widget.MakeLine(widget.Line{Color: color.Black}))
 
 	w.SetCloseIntercept(func() {
 		fmt.Println("closed")
