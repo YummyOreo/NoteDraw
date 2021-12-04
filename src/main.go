@@ -4,12 +4,14 @@ import (
 	"fmt"
 	"image/color"
 
+	widgets "NoteDraw/mods"
+	structs "NoteDraw/structs"
+
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/app"
 	"fyne.io/fyne/v2/canvas"
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/widget"
-	//widgets "NoteDraw/mods"
 )
 
 func main() {
@@ -24,15 +26,22 @@ func main() {
 	multiW := 2
 
 	w.Resize(fyne.NewSize(float32(with*multiW), float32(height*multiH)))
+	filler := widget.NewLabel("")
+	contaiter1 := container.NewVBox(filler)
 
-	card1 := widget.NewCard("Name Of file", "Last date motified", canvas.NewText("This is a prevew", color.Gray{Y: 100}))
-	card2 := widget.NewCard("Name Of file", "Last date motified", canvas.NewText("This is a prevew", color.Gray{Y: 100}))
-	card3 := widget.NewCard("Name Of file", "Last date motified", canvas.NewText("This is a prevew", color.Gray{Y: 100}))
-	card4 := widget.NewCard("Name Of file", "Last date motified", canvas.NewText("This is a prevew", color.Gray{Y: 100}))
-	card5 := widget.NewCard("Name Of file", "Last date motified", canvas.NewText("This is a prevew", color.Gray{Y: 100}))
+	var files []structs.NoteDrawFile
+
+	btnMake := widgets.MakeButton(widgets.Button{Text: "Make Note", Func: func() {
+		file := structs.NoteDrawFile{Name: "name", LastModified: structs.Date{Month: 1, Day: 2, TimeHour: 3, TimeMin: 4}, Prev: "THis thisthsoentuhosenatuhsnoeat ntaouhesnteohusnt snaotuhoasen"}
+		files = append(files, file)
+
+		contaiter1.Add(MakeFileCard(file))
+		contaiter1.Refresh()
+	}})
+
 	text1 := widget.NewLabel("test")
 
-	w.SetContent(container.NewHBox(container.NewVBox(card1, card2, card3, card4, card5), text1))
+	w.SetContent(container.NewVBox(btnMake, container.NewHBox(contaiter1, text1)))
 
 	w.SetCloseIntercept(func() {
 		fmt.Println("closed")
@@ -40,5 +49,11 @@ func main() {
 	})
 
 	w.ShowAndRun()
+}
 
+func MakeFileCard(file structs.NoteDrawFile) *fyne.Container {
+	card1 := widget.NewCard(file.Name, file.Name, canvas.NewText(file.Prev, color.Gray{Y: 100}))
+	btn1 := widgets.MakeButton(widgets.Button{Text: "Open File"})
+	VBox1 := container.NewVBox(card1, btn1)
+	return VBox1
 }
