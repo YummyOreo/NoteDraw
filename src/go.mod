@@ -1,4 +1,4 @@
-module NotDraw
+module NoteDraw
 
 go 1.17
 

@@ -9,6 +9,23 @@ import (
 	"fyne.io/fyne/v2/widget"
 )
 
+func MakeButton(ButtonVar Button) *widget.Button {
+	if ButtonVar.Func == nil {
+		ButtonVar.Func = func() {}
+	}
+	if ButtonVar.Text == "" {
+		ButtonVar.Text = "name"
+	}
+	button := widget.NewButton(ButtonVar.Text, ButtonVar.Func)
+
+	return button
+}
+
+type Button struct {
+	Text string
+	Func func()
+}
+
 func MakeRect(RectVar Rect) *canvas.Rectangle {
 
 	if RectVar.Color == nil {
