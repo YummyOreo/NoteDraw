@@ -27,32 +27,54 @@ func main() {
 
 	w.Resize(fyne.NewSize(float32(with*multiW), float32(height*multiH)))
 	filler := widget.NewLabel("")
-	contaiter1 := container.NewVBox(filler)
+	container1 := container.NewVBox(filler)
 
 	var files []structs.NoteDrawFile
 
 	btnMake := widgets.MakeButton(widgets.Button{Text: "Make Note", Func: func() {
-		file := structs.NoteDrawFile{Name: "name", LastModified: structs.Date{Month: 1, Day: 2, TimeHour: 3, TimeMin: 4}, Prev: "THis thisthsoentuhosenatuhsnoeat ntaouhesnteohusnt snaotuhoasen"}
-		files = append(files, file)
 
-		contaiter1.Add(MakeFileCard(file))
-		contaiter1.Refresh()
+		var name string
+
+		MakeNoteWindow := a.NewWindow("Make Note")
+
+		FileName := widget.NewEntry()
+
+		FileName.Resize(fyne.NewSize(300, FileName.MinSize().Height))
+
+		ButtonSubmit := widgets.MakeButton(widgets.Button{Text: "Make Note", Func: func() {
+			name = FileName.Text
+			MakeNoteWindow.Close()
+
+			file := structs.NoteDrawFile{Name: name, LastModified: structs.Date{Month: 01, Day: 02, TimeHour: 03, TimeMin: 14}, Prev: "THis thisthsoentuhosenatuhsnoeat ntaouhesnteohusnt snaotuhoasen"}
+			files = append(files, file)
+
+			container1.Add(MakeFileCard(file))
+			container1.Refresh()
+		}})
+
+		MakeNoteWindow.Resize(fyne.NewSize(float32(300), float32(100)))
+
+		ContainerForm := container.NewVBox(FileName, ButtonSubmit)
+
+		MakeNoteWindow.SetContent(ContainerForm)
+
+		MakeNoteWindow.Show()
 	}})
 
 	text1 := widget.NewLabel("test")
 
-	w.SetContent(container.NewVBox(btnMake, container.NewHBox(contaiter1, text1)))
+	w.SetContent(container.NewVBox(btnMake, container.NewHBox(container1, text1)))
 
 	w.SetCloseIntercept(func() {
 		fmt.Println("closed")
-		w.Close()
+		a.Quit()
 	})
 
 	w.ShowAndRun()
 }
 
 func MakeFileCard(file structs.NoteDrawFile) *fyne.Container {
-	card1 := widget.NewCard(file.Name, file.Name, canvas.NewText(file.Prev, color.Gray{Y: 100}))
+	card1 := widget.NewCard(file.Name, fmt.Sprintf("%02d", file.LastModified.Month)+"/"+fmt.Sprintf("%02d", file.LastModified.Day)+" "+fmt.Sprintf("%02d", file.LastModified.TimeHour)+":"+fmt.Sprintf("%02d", file.LastModified.TimeMin), canvas.NewText(file.Prev, color.Gray{Y: 100}))
 	btn1 := widgets.MakeButton(widgets.Button{Text: "Open File"})
 	VBox1 := container.NewVBox(card1, btn1)
 	return VBox1

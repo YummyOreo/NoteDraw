@@ -7,8 +7,8 @@ type NoteDrawFile struct {
 }
 
 type Date struct {
-	Month    float32
-	Day      float32
-	TimeHour float32
-	TimeMin  float32
+	Month    int
+	Day      int
+	TimeHour int
+	TimeMin  int
 }
