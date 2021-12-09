@@ -1,4 +1,4 @@
-package mod
+package snippets
 
 import (
 	"image/color"

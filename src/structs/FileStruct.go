@@ -1,9 +1,12 @@
 package structs
 
+import "fyne.io/fyne/v2"
+
 type NoteDrawFile struct {
 	Name         string
 	LastModified Date
 	Prev         string
+	Content      string
 }
 
 type Date struct {
@@ -11,4 +14,12 @@ type Date struct {
 	Day      int
 	TimeHour int
 	TimeMin  int
+}
+
+type Files struct {
+	Files map[string]NoteDrawFile
+}
+
+type LastContent struct {
+	Content fyne.CanvasObject
 }
