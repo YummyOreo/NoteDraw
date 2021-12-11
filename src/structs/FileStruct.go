@@ -1,6 +1,9 @@
 package structs
 
-import "fyne.io/fyne/v2"
+import (
+	"fyne.io/fyne/v2"
+	"fyne.io/fyne/v2/widget"
+)
 
 type NoteDrawFile struct {
 	Name         string
@@ -22,4 +25,11 @@ type Files struct {
 
 type LastContent struct {
 	Content fyne.CanvasObject
+}
+
+type CurrentFile struct {
+	FileName string
+	File     NoteDrawFile
+	Card     widget.Card
+	Button   widget.Button
 }
