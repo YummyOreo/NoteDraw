@@ -36,6 +36,7 @@ func main() {
 
 	files := new(structs.Files)
 	files.Files = make(map[string]structs.NoteDrawFile)
+	files.Cards = make(map[string]*widget.Card)
 
 	Header := canvas.NewText("NoteDraw", color.White)
 	Header.Alignment = fyne.TextAlignCenter
@@ -108,8 +109,12 @@ func MakeButton(a fyne.App, files *structs.Files, ContainerFiles *fyne.Container
 
 func MakeFileCard(file structs.NoteDrawFile, ContainerShowContent *fyne.Container, LastContainer *structs.LastContent, files *structs.Files) *fyne.Container {
 	card1 := widget.NewCard(files.Files[file.Name].Name, fmt.Sprintf("%02d", files.Files[file.Name].LastModified.Month)+"/"+fmt.Sprintf("%02d", files.Files[file.Name].LastModified.Day)+" "+fmt.Sprintf("%02d", file.LastModified.TimeHour)+":"+fmt.Sprintf("%02d", file.LastModified.TimeMin), canvas.NewText(file.Prev, color.Gray{Y: 100}))
+	files.Cards[file.Name] = card1
 	btn1 := snippets.MakeButton(snippets.Button{Text: "Open File"})
 	btn1.OnTapped = func() {
+		file.Prev = "a"
+		files.Files[file.Name] = file
+		UpdateCard(file, files)
 		ContainerShowContent.Remove(LastContainer.Content)
 		ContainerShowContent.Refresh()
 		ContainerShowContent.Add(MakeContent(file, LastContainer))
@@ -128,6 +133,11 @@ func MakeContent(file structs.NoteDrawFile, LastContainer *structs.LastContent) 
 	Content.Add(text)
 	LastContainer.Content = Content
 	return Content
+}
+
+func UpdateCard(file structs.NoteDrawFile, files *structs.Files) {
+	files.Cards[file.Name].Title = files.Files[file.Name].Prev
+	files.Cards[file.Name].Refresh()
 }
 
 func windowSize(part float32) fyne.Size {

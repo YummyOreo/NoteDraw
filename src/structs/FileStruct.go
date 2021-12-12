@@ -21,6 +21,7 @@ type Date struct {
 
 type Files struct {
 	Files map[string]NoteDrawFile
+	Cards map[string]*widget.Card
 }
 
 type LastContent struct {
