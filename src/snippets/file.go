@@ -7,7 +7,8 @@ import (
 )
 
 func GetPrev(file structs.NoteDrawFile) string {
-	file.Content = fmt.Sprintf("%-80v ", file.Content)
-	first := file.Content[0:79]
-	return first
+	if len(file.Content) >= 80 {
+		return file.Content[0:80]
+	}
+	return fmt.Sprintf("%-80v", file.Content)
 }

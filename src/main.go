@@ -11,6 +11,7 @@ import (
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/app"
+	"fyne.io/fyne/v2/driver/desktop"
 
 	"fyne.io/fyne/v2/canvas"
 	"fyne.io/fyne/v2/container"
@@ -38,11 +39,27 @@ func main() {
 	files.Files = make(map[string]structs.NoteDrawFile)
 	files.Cards = make(map[string]*widget.Card)
 
+	current := new(structs.CurrentFile)
+
 	Header := canvas.NewText("NoteDraw", color.White)
 	Header.Alignment = fyne.TextAlignCenter
 	Header.TextSize = 20
 
-	ButtonMakeNote := MakeButton(a, files, ContainerFiles, ContainerShowContent, LastContainer)
+	ButtonMakeNote := MakeButton(a, files, ContainerFiles, ContainerShowContent, LastContainer, current)
+
+	w.Canvas().AddShortcut(&desktop.CustomShortcut{KeyName: fyne.KeyS, Modifier: desktop.ControlModifier}, func(shortcut fyne.Shortcut) {
+		TempFile := structs.NoteDrawFile{}
+		TempFile.Content = current.Text.Text
+		TempFile.Name = files.Files[current.FileName].Name
+		TempFile.LastModified = structs.Date{Month: int(time.Now().Month()), Day: time.Now().Day(), TimeHour: time.Now().Hour(), TimeMin: time.Now().Minute()}
+		TempFile.Prev = snippets.GetPrev(TempFile)
+		if TempFile.LastModified.TimeHour > 12 {
+			TempFile.LastModified.TimeHour = TempFile.LastModified.TimeHour - 12
+		}
+		files.Files[TempFile.Name] = TempFile
+		UpdateCard(files.Files[TempFile.Name], files)
+		fmt.Println(current.Text.Text)
+	})
 
 	ButtonMakeNote.Importance = widget.MediumImportance
 
@@ -66,7 +83,7 @@ func main() {
 	w.ShowAndRun()
 }
 
-func MakeButton(a fyne.App, files *structs.Files, ContainerFiles *fyne.Container, ContainerShowContent *fyne.Container, LastContainer *structs.LastContent) *widget.Button {
+func MakeButton(a fyne.App, files *structs.Files, ContainerFiles *fyne.Container, ContainerShowContent *fyne.Container, LastContainer *structs.LastContent, current *structs.CurrentFile) *widget.Button {
 	ButtonMakeNote := snippets.MakeButton(snippets.Button{Text: "Make Note", Func: func() {
 
 		var name string
@@ -90,7 +107,7 @@ func MakeButton(a fyne.App, files *structs.Files, ContainerFiles *fyne.Container
 			}
 			file.Prev = snippets.GetPrev(file)
 			files.Files[name] = file
-			ContainerFiles.Add(MakeFileCard(file, ContainerShowContent, LastContainer, files))
+			ContainerFiles.Add(MakeFileCard(file, ContainerShowContent, LastContainer, files, current))
 			ContainerFiles.Refresh()
 			return
 		}})
@@ -107,36 +124,41 @@ func MakeButton(a fyne.App, files *structs.Files, ContainerFiles *fyne.Container
 	return ButtonMakeNote
 }
 
-func MakeFileCard(file structs.NoteDrawFile, ContainerShowContent *fyne.Container, LastContainer *structs.LastContent, files *structs.Files) *fyne.Container {
-	card1 := widget.NewCard(files.Files[file.Name].Name, fmt.Sprintf("%02d", files.Files[file.Name].LastModified.Month)+"/"+fmt.Sprintf("%02d", files.Files[file.Name].LastModified.Day)+" "+fmt.Sprintf("%02d", file.LastModified.TimeHour)+":"+fmt.Sprintf("%02d", file.LastModified.TimeMin), canvas.NewText(file.Prev, color.Gray{Y: 100}))
+func MakeFileCard(file structs.NoteDrawFile, ContainerShowContent *fyne.Container, LastContainer *structs.LastContent, files *structs.Files, current *structs.CurrentFile) *fyne.Container {
+	text := canvas.NewText(file.Prev, color.Gray{Y: 100})
+	text.SetMinSize(fyne.NewSize(text.Size().Width, text.Size().Height))
+	card1 := widget.NewCard(files.Files[file.Name].Name, fmt.Sprintf("%02d", files.Files[file.Name].LastModified.Month)+"/"+fmt.Sprintf("%02d", files.Files[file.Name].LastModified.Day)+" "+fmt.Sprintf("%02d", file.LastModified.TimeHour)+":"+fmt.Sprintf("%02d", file.LastModified.TimeMin), text)
 	files.Cards[file.Name] = card1
 	btn1 := snippets.MakeButton(snippets.Button{Text: "Open File"})
 	btn1.OnTapped = func() {
-		file.Prev = "a"
-		files.Files[file.Name] = file
-		UpdateCard(file, files)
 		ContainerShowContent.Remove(LastContainer.Content)
 		ContainerShowContent.Refresh()
-		ContainerShowContent.Add(MakeContent(file, LastContainer))
+		ContainerShowContent.Add(MakeContent(file, LastContainer, current, files))
 		ContainerShowContent.Refresh()
 		return
 	}
 	VBox1 := container.NewVBox(card1, btn1)
-	return VBox1
+	return container.NewWithoutLayout(VBox1)
 }
 
-func MakeContent(file structs.NoteDrawFile, LastContainer *structs.LastContent) *fyne.Container {
+func MakeContent(file structs.NoteDrawFile, LastContainer *structs.LastContent, current *structs.CurrentFile, files *structs.Files) *fyne.Container {
 	text := widget.NewMultiLineEntry()
 	text.Wrapping = fyne.TextWrapBreak
+	text.Text = files.Files[file.Name].Content
 	text.Resize(fyne.NewSize(float32(windowSize(0.8).Width-337), float32(windowSize(0.8).Height-200)))
 	Content := container.New(&layouts.TextBox{})
 	Content.Add(text)
 	LastContainer.Content = Content
+	current.FileName = file.Name
+	current.Text = text
 	return Content
 }
 
 func UpdateCard(file structs.NoteDrawFile, files *structs.Files) {
-	files.Cards[file.Name].Title = files.Files[file.Name].Prev
+	text := canvas.NewText(files.Files[file.Name].Prev, color.Gray{Y: 100})
+	text.SetMinSize(fyne.NewSize(files.Cards[file.Name].Content.Size().Width, files.Cards[file.Name].Content.Size().Height))
+	files.Cards[file.Name].SetContent(text)
+	files.Cards[file.Name].Subtitle = fmt.Sprintf("%02d", files.Files[file.Name].LastModified.Month) + "/" + fmt.Sprintf("%02d", files.Files[file.Name].LastModified.Day) + " " + fmt.Sprintf("%02d", file.LastModified.TimeHour) + ":" + fmt.Sprintf("%02d", file.LastModified.TimeMin)
 	files.Cards[file.Name].Refresh()
 }
 

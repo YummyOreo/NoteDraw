@@ -30,7 +30,5 @@ type LastContent struct {
 
 type CurrentFile struct {
 	FileName string
-	File     NoteDrawFile
-	Card     widget.Card
-	Button   widget.Button
+	Text     *widget.Entry
 }
