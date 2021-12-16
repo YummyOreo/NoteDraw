@@ -8,7 +8,7 @@
 
 | Codebase   | Description                             |
 |:---------- |:---------------------------------------:|
-| [SRC](src) | The sorce code for the client side (Go) |
+| [pinapple](pinapple) | The sorce code for the client side (Go) |
 
 ## Branches
 
@@ -40,7 +40,7 @@ Notdraw, is a note taking app, that you can draw in, syncs to the cloud, and is 
 ### First download the files
 
 ```console
-$ git clone https://github.com/YummyOreo/NoteDraw/ && cd NoteDraw/src
+$ git clone https://github.com/YummyOreo/NoteDraw/ && cd NoteDraw/pinapple
 ```
 
 This will download the sorce for the app
@@ -54,7 +54,7 @@ This will download the sorce for the app
 
 ### Run Commands
 
-> This is assuming that your in NoteDraw/src
+> This is assuming that your in NoteDraw/pinapple
   
 This the main app
 
