@@ -1,14 +1,21 @@
 package snippets
 
 import (
-	"fmt"
-
 	"NoteDraw/structs"
+
+	"fyne.io/fyne/v2"
+	"fyne.io/fyne/v2/container"
 )
 
-func GetPrev(file structs.NoteDrawFile) string {
-	if len(file.Content) >= 80 {
-		return file.Content[0:80]
+func GetContent(file structs.NoteDrawFile) *fyne.Container {
+	content := container.NewVBox()
+	for _, v := range file.Content {
+		switch v.Type {
+		case "title":
+			content.AddObject(v.Title.Text)
+		case "paragraph":
+			content.AddObject(v.Paragraph.Text)
+		}
 	}
-	return fmt.Sprintf("%-80v", file.Content)
+	return content
 }

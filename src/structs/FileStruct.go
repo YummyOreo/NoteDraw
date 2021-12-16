@@ -8,8 +8,7 @@ import (
 type NoteDrawFile struct {
 	Name         string
 	LastModified Date
-	Prev         string
-	Content      string
+	Content      []NoteType
 }
 
 type Date struct {
@@ -29,6 +28,20 @@ type LastContent struct {
 }
 
 type CurrentFile struct {
+	Types    []NoteType
 	FileName string
-	Text     *widget.Entry
+}
+
+type NoteType struct {
+	Type      string
+	Paragraph Paragraph
+	Title     Title
+}
+
+type Paragraph struct {
+	Text *widget.Entry
+}
+
+type Title struct {
+	Text *widget.Entry
 }
