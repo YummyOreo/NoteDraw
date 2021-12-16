@@ -1,4 +1,4 @@
-<div align="center"><img src="https://github.com/YummyOreo/NoteDraw/blob/main/Best%20logo.png"></div>
+<div align="center" ><img src="https://github.com/YummyOreo/NoteDraw/blob/main/Best%20logo.png" width="150" height="150"></div>
 <h1 align="center">About NoteDraw</h1>
 <h3 align="center"><a href="#about">About</a> · <a href="#how-to-contribute">How to contribute</a> · <a href="#how-to-run-the-app">How to run</a>
 
