@@ -1,8 +1,12 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"image/color"
+	"io/ioutil"
+	"log"
+	"os"
 	"time"
 
 	note "NoteDraw/Note"
@@ -15,6 +19,8 @@ import (
 	"fyne.io/fyne/v2/canvas"
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/widget"
+	"github.com/harry1453/go-common-file-dialog/cfd"
+	"github.com/harry1453/go-common-file-dialog/cfdutil"
 	"github.com/kbinani/screenshot"
 )
 
@@ -85,11 +91,38 @@ func main() {
 
 	// exporting (not done)
 	w.Canvas().AddShortcut(&desktop.CustomShortcut{KeyName: fyne.KeyE, Modifier: desktop.ControlModifier}, func(shortcut fyne.Shortcut) {
-		TempFile := files.Files[current.FileName]
-		TempFile.LastModified = structs.Date{Month: int(time.Now().Month()), Day: time.Now().Day(), TimeHour: time.Now().Hour(), TimeMin: time.Now().Minute()}
-		if TempFile.LastModified.TimeHour > 12 {
-			TempFile.LastModified.TimeHour = TempFile.LastModified.TimeHour - 12
+		result, err := cfdutil.ShowSaveFileDialog(cfd.DialogConfig{
+			Title: "Save A File",
+			Role:  "SaveFileExample",
+			FileFilters: []cfd.FileFilter{
+				{
+					DisplayName: "NoteDraw Files (*.nd)",
+					Pattern:     "*.nd",
+				},
+			},
+			SelectedFileFilterIndex: 1,
+			FileName:                current.FileName + ".nd",
+			DefaultExtension:        "nd",
+		})
+		if err != nil {
+			log.Fatal(err)
 		}
+		TempFile := structs.SaveFile{Name: current.FileName, LastModified: fmt.Sprintf("%#v", files.Files[current.FileName].LastModified)}
+		for _, v := range files.Files[current.FileName].Content {
+			switch v.Type {
+			case "title":
+				TempFile.Content = append(TempFile.Content, structs.SaveType{Type: v.Type, Data: v.Title.Text.Text})
+			case "paragraph":
+				TempFile.Content = append(TempFile.Content, structs.SaveType{Type: v.Type, Data: v.Paragraph.Text.Text})
+			}
+		}
+		b, err := json.Marshal(TempFile)
+		if err != nil {
+			fmt.Println(err)
+		}
+		fmt.Println(string(b))
+		ioutil.WriteFile(result, b, os.ModePerm)
+		log.Printf("Chosen file: %s\n", result)
 	})
 
 	// sets the button that makes the notes to be meduim importance

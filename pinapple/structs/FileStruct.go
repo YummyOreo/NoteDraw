@@ -11,6 +11,17 @@ type NoteDrawFile struct {
 	Content      []NoteType
 }
 
+type SaveFile struct {
+	Name         string
+	LastModified string
+	Content      []SaveType
+}
+
+type SaveType struct {
+	Type string
+	Data string
+}
+
 type Date struct {
 	Month    int
 	Day      int
