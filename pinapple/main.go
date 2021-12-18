@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"image/color"
 	"io/ioutil"
-	"log"
 	"os"
 	"time"
 
@@ -57,9 +56,8 @@ func main() {
 	current := new(structs.CurrentFile)
 
 	// the text on the top of the window
-	Header := canvas.NewText("NoteDraw", color.White)
+	Header := widget.NewLabel("NoteDraw")
 	Header.Alignment = fyne.TextAlignCenter
-	Header.TextSize = 20
 
 	// makes the main button
 	ButtonMakeNote := note.MakeButton(a, files, current, LastContainer, ContainerFiles, ContainerShowContent)
@@ -109,8 +107,9 @@ func main() {
 			FileName:                current.FileName + ".nd",
 			DefaultExtension:        "nd",
 		})
+
 		if err != nil {
-			log.Fatal(err)
+			fmt.Println(err)
 			return
 		}
 
@@ -134,7 +133,6 @@ func main() {
 		}
 		fmt.Println(string(b))
 		ioutil.WriteFile(result, b, os.ModePerm)
-		log.Printf("Chosen file: %s\n", result)
 	})
 
 	// importing (not done)
@@ -157,8 +155,9 @@ func main() {
 			DefaultExtension:        "nd",
 		})
 		if err != nil {
-			log.Fatal(err)
+			return
 		}
+
 		// Open our jsonFile
 		jsonFile, err := os.Open(result)
 		// if we os.Open returns an error then handle it

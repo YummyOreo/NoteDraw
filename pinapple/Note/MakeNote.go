@@ -52,8 +52,7 @@ func MakeButton(a fyne.App, files *structs.Files, current *structs.CurrentFile, 
 			}
 
 			// checks if the name is already taken
-			for i, v := range files.Files {
-				i = i
+			for _, v := range files.Files {
 				if v.Name == FileName.Text {
 					// if it is, make a popup saying that it is already taken
 					popup := widget.NewModalPopUp(
