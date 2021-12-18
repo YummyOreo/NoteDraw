@@ -88,6 +88,7 @@ func MakeButton(a fyne.App, files *structs.Files, current *structs.CurrentFile, 
 
 			// make the card and append it to the container
 			ContainerFiles.Add(MakeFileCard(file, files, current, ContainerShowContent, LastContainer))
+			ContainerFiles.Objects = snippets.MoveInt(ContainerFiles.Objects, len(ContainerFiles.Objects)-1, 0)
 			ContainerFiles.Refresh()
 			return
 		}})

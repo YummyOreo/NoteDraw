@@ -10,6 +10,7 @@ import (
 	"time"
 
 	note "NoteDraw/Note"
+	"NoteDraw/snippets"
 	"NoteDraw/structs"
 
 	"fyne.io/fyne/v2"
@@ -96,6 +97,10 @@ func main() {
 			Role:  "SaveFileExample",
 			FileFilters: []cfd.FileFilter{
 				{
+					DisplayName: "JSON Files (*.json)",
+					Pattern:     "*.json",
+				},
+				{
 					DisplayName: "NoteDraw Files (*.nd)",
 					Pattern:     "*.nd",
 				},
@@ -106,8 +111,14 @@ func main() {
 		})
 		if err != nil {
 			log.Fatal(err)
+			return
 		}
-		TempFile := structs.SaveFile{Name: current.FileName, LastModified: fmt.Sprintf("%#v", files.Files[current.FileName].LastModified)}
+
+		if result == "" {
+			return
+		}
+
+		TempFile := structs.SaveFile{Name: current.FileName, LastModified: files.Files[current.FileName].LastModified}
 		for _, v := range files.Files[current.FileName].Content {
 			switch v.Type {
 			case "title":
@@ -119,11 +130,76 @@ func main() {
 		b, err := json.Marshal(TempFile)
 		if err != nil {
 			fmt.Println(err)
+			return
 		}
 		fmt.Println(string(b))
 		ioutil.WriteFile(result, b, os.ModePerm)
 		log.Printf("Chosen file: %s\n", result)
 	})
+
+	// importing (not done)
+	ImportNote := snippets.MakeButton(snippets.Button{Text: "Import", Func: func() {
+		result, err := cfdutil.ShowOpenFileDialog(cfd.DialogConfig{
+			Title: "Open A File",
+			Role:  "OpenFileExample",
+			FileFilters: []cfd.FileFilter{
+				{
+					DisplayName: "JSON Files (*.json)",
+					Pattern:     "*.json",
+				},
+				{
+					DisplayName: "NoteDraw Files (*.nd)",
+					Pattern:     "*.nd",
+				},
+			},
+			SelectedFileFilterIndex: 2,
+			FileName:                current.FileName + ".nd",
+			DefaultExtension:        "nd",
+		})
+		if err != nil {
+			log.Fatal(err)
+		}
+		// Open our jsonFile
+		jsonFile, err := os.Open(result)
+		// if we os.Open returns an error then handle it
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
+
+		if jsonFile.Name() == "" {
+			return
+		}
+
+		byteValue, _ := ioutil.ReadAll(jsonFile)
+		tempStruct := structs.SaveFileJson{}
+		json.Unmarshal(byteValue, &tempStruct)
+
+		file := structs.NoteDrawFile{Name: tempStruct.Name, LastModified: tempStruct.LastModified}
+		for _, v := range tempStruct.Content {
+			switch v.Type {
+			case "paragraph":
+				Ph := widget.NewMultiLineEntry()
+				Ph.Wrapping = fyne.TextWrapBreak
+				Ph.Text = v.Data
+				file.Content = append(file.Content, structs.NoteType{Type: v.Type, Paragraph: structs.Paragraph{Text: Ph}})
+			case "title":
+				file.Content = append(file.Content, structs.NoteType{Type: v.Type})
+			}
+		}
+
+		// defer the closing of our jsonFile so that we can parse it later on
+		defer jsonFile.Close()
+
+		// save the file to a map
+		files.Files[file.Name] = file
+
+		// make the card and append it to the container
+		ContainerFiles.Add(note.MakeFileCard(file, files, current, ContainerShowContent, LastContainer))
+		ContainerFiles.Objects = snippets.MoveInt(ContainerFiles.Objects, len(ContainerFiles.Objects)-1, 0)
+		ContainerFiles.Refresh()
+		return
+	}})
 
 	// sets the button that makes the notes to be meduim importance
 	ButtonMakeNote.Importance = widget.MediumImportance
@@ -133,7 +209,12 @@ func main() {
 
 	// adds the header and the button to make the notes
 	ContainerHead.Add(Header)
-	ContainerHead.Add(ButtonMakeNote)
+
+	ContainerHead.Add(canvas.NewLine(color.RGBA{R: 24, G: 24, B: 24, A: 190}))
+
+	ContainerHead.Add(container.NewHBox(ButtonMakeNote, ImportNote))
+
+	ContainerHead.Add(canvas.NewLine(color.RGBA{R: 24, G: 24, B: 24, A: 190}))
 
 	// makes the main container, and makes it so they are formated correctly
 	ContainerMain := container.NewBorder(ContainerHead, nil, ContainerScroll, nil, ContainerShowContent)

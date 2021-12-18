@@ -19,3 +19,16 @@ func GetContent(file structs.NoteDrawFile) *fyne.Container {
 	}
 	return content
 }
+
+func InsertInt(array []fyne.CanvasObject, value fyne.CanvasObject, index int) []fyne.CanvasObject {
+	return append(array[:index], append([]fyne.CanvasObject{value}, array[index:]...)...)
+}
+
+func RemoveInt(array []fyne.CanvasObject, index int) []fyne.CanvasObject {
+	return append(array[:index], array[index+1:]...)
+}
+
+func MoveInt(array []fyne.CanvasObject, srcIndex int, dstIndex int) []fyne.CanvasObject {
+	value := array[srcIndex]
+	return InsertInt(RemoveInt(array, srcIndex), value, dstIndex)
+}

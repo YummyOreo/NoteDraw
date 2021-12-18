@@ -13,8 +13,14 @@ type NoteDrawFile struct {
 
 type SaveFile struct {
 	Name         string
-	LastModified string
+	LastModified Date
 	Content      []SaveType
+}
+
+type SaveFileJson struct {
+	Name         string     `json:"name"`
+	LastModified Date       `json:"lastModified"`
+	Content      []SaveType `json:"content"`
 }
 
 type SaveType struct {
