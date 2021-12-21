@@ -175,6 +175,23 @@ func main() {
 		json.Unmarshal(byteValue, &tempStruct)
 
 		file := structs.NoteDrawFile{Name: tempStruct.Name, LastModified: tempStruct.LastModified}
+
+		for _, v := range files.Files {
+			if v.Name == tempStruct.Name {
+				// if it is, make a popup saying that it is already taken
+				popup := widget.NewModalPopUp(
+					widget.NewLabel("That already exists"),
+					w.Canvas(),
+				)
+				popup.Show()
+				// wait 2 seconds
+				time.Sleep(2 * time.Second)
+				// hide the popup, and stop the code for doing anything else
+				popup.Hide()
+				return
+			}
+		}
+
 		for _, v := range tempStruct.Content {
 			switch v.Type {
 			case "paragraph":
@@ -183,7 +200,13 @@ func main() {
 				Ph.Text = v.Data
 				file.Content = append(file.Content, structs.NoteType{Type: v.Type, Paragraph: structs.Paragraph{Text: Ph}})
 			case "title":
-				file.Content = append(file.Content, structs.NoteType{Type: v.Type})
+				// makes a new multily line text entry
+				Title := widget.NewEntry()
+				Title.TextStyle.Bold = true
+				Title.Text = v.Data
+
+				// makes a new type, and sets the text to be the new multiline entry, then appends it to the types
+				file.Content = append(file.Content, structs.NoteType{Type: "title", Title: structs.Title{Text: Title}})
 			}
 		}
 
