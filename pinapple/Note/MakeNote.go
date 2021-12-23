@@ -1,4 +1,4 @@
-package note
+package Note
 
 import (
 	"NoteDraw/snippets"
@@ -87,7 +87,7 @@ func MakeButton(a fyne.App, files *structs.Files, current *structs.CurrentFile, 
 
 			// make the card and append it to the container
 			ContainerFiles.Add(MakeFileCard(file, files, current, ContainerShowContent, LastContainer))
-			ContainerFiles.Objects = snippets.MoveInt(ContainerFiles.Objects, len(ContainerFiles.Objects)-1, 0)
+			ContainerFiles.Objects = snippets.Move(ContainerFiles.Objects, len(ContainerFiles.Objects)-1, 0)
 			ContainerFiles.Refresh()
 		}})
 
@@ -200,7 +200,7 @@ func MakeContent(file structs.NoteDrawFile, files *structs.Files, current *struc
 
 		Lines := new(structs.LineList)
 
-		btn := &snippets.DrawRect{LineList: Lines, Container: Box}
+		btn := &structs.DrawRect{LineList: Lines, Container: Box}
 
 		btn.ExtendBaseWidget(btn)
 
