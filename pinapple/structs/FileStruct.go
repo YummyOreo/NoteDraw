@@ -25,8 +25,16 @@ type SaveFileJson struct {
 }
 
 type SaveType struct {
-	Type string
-	Data string
+	Type  string
+	Data  string
+	Lines []SaveDraw
+}
+
+type SaveDraw struct {
+	Pos1X int
+	Pos1Y int
+	Pos2X int
+	Pos2Y int
 }
 
 type Date struct {

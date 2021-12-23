@@ -124,6 +124,12 @@ func main() {
 				TempFile.Content = append(TempFile.Content, structs.SaveType{Type: v.Type, Data: v.Title.Text.Text})
 			case "paragraph":
 				TempFile.Content = append(TempFile.Content, structs.SaveType{Type: v.Type, Data: v.Paragraph.Text.Text})
+			case "draw":
+				lines := []structs.SaveDraw{}
+				for _, v := range v.Drawing.Canvas.Line {
+					lines = append(lines, structs.SaveDraw{Pos1X: int(v.Position1.X), Pos1Y: int(v.Position1.Y), Pos2X: int(v.Position2.X), Pos2Y: int(v.Position2.Y)})
+				}
+				TempFile.Content = append(TempFile.Content, structs.SaveType{Type: v.Type, Lines: lines})
 			}
 		}
 		b, err := json.Marshal(TempFile)
@@ -207,6 +213,21 @@ func main() {
 
 				// makes a new type, and sets the text to be the new multiline entry, then appends it to the types
 				file.Content = append(file.Content, structs.NoteType{Type: "title", Title: structs.Title{Text: Title}})
+			case "draw":
+				drawing := structs.Drawing{}
+				lines := new(structs.LineList)
+				for _, v := range v.Lines {
+					line := canvas.NewLine(color.Black)
+					line.StrokeWidth = 2
+
+					line.Position1.X = float32(v.Pos1X)
+					line.Position1.Y = float32(v.Pos1Y)
+					line.Position2.X = float32(v.Pos2X)
+					line.Position2.Y = float32(v.Pos2Y)
+					lines.Line = append(lines.Line, line)
+				}
+				drawing.Canvas = lines
+				file.Content = append(file.Content, structs.NoteType{Type: v.Type, Drawing: drawing})
 			}
 		}
 
