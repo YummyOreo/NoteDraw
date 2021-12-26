@@ -14,7 +14,7 @@ func MakeButton(ButtonVar Button) *widget.Button {
 		ButtonVar.Func = func() {}
 	}
 	if ButtonVar.Text == "" {
-		ButtonVar.Text = "name"
+		ButtonVar.Text = "Name"
 	}
 	button := widget.NewButton(ButtonVar.Text, ButtonVar.Func)
 
