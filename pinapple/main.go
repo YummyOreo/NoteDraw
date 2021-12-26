@@ -1,15 +1,14 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
 	"image/color"
-	"io/ioutil"
-	"os"
-	"time"
 
 	note "NoteDraw/Note"
+	"NoteDraw/exporting"
 	"NoteDraw/loading"
+	"NoteDraw/saving"
+	"NoteDraw/snippets"
 	"NoteDraw/structs"
 
 	"fyne.io/fyne/v2"
@@ -19,9 +18,6 @@ import (
 	"fyne.io/fyne/v2/canvas"
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/widget"
-	"github.com/harry1453/go-common-file-dialog/cfd"
-	"github.com/harry1453/go-common-file-dialog/cfdutil"
-	"github.com/kbinani/screenshot"
 )
 
 func main() {
@@ -33,7 +29,7 @@ func main() {
 
 	// centers the window and resizes it to most of the screen
 	w.CenterOnScreen()
-	w.Resize(windowSize(0.8))
+	w.Resize(snippets.WindowSize(0.8))
 
 	// makes the container for the top
 	ContainerHead := container.NewVBox()
@@ -64,81 +60,12 @@ func main() {
 
 	// makes a shortcut for saving the current note
 	w.Canvas().AddShortcut(&desktop.CustomShortcut{KeyName: fyne.KeyS, Modifier: desktop.ControlModifier}, func(shortcut fyne.Shortcut) {
-		// makes a new temp note, that is blank
-		TempFile := structs.NoteDrawFile{}
-
-		// sets the types to the same of the current one
-		TempFile.Content = current.Types
-
-		// sets the name to the current file name
-		TempFile.Name = files.Files[current.FileName].Name
-
-		// sets the last modified to the current time
-		TempFile.LastModified = structs.Date{Month: int(time.Now().Month()), Day: time.Now().Day(), TimeHour: time.Now().Hour(), TimeMin: time.Now().Minute()}
-
-		// changes the time to 12 hour format
-		if TempFile.LastModified.TimeHour > 12 {
-			TempFile.LastModified.TimeHour = TempFile.LastModified.TimeHour - 12
-		}
-
-		// updates the map to be the updated one
-		files.Files[TempFile.Name] = TempFile
-
-		// updates the card
-		UpdateCard(files.Files[TempFile.Name], files)
+		saving.Save(files, current)
 	})
 
 	// exporting (not done)
 	w.Canvas().AddShortcut(&desktop.CustomShortcut{KeyName: fyne.KeyE, Modifier: desktop.ControlModifier}, func(shortcut fyne.Shortcut) {
-		result, err := cfdutil.ShowSaveFileDialog(cfd.DialogConfig{
-			Title: "Save A File",
-			Role:  "SaveFileExample",
-			FileFilters: []cfd.FileFilter{
-				{
-					DisplayName: "JSON Files (*.json)",
-					Pattern:     "*.json",
-				},
-				{
-					DisplayName: "NoteDraw Files (*.nd)",
-					Pattern:     "*.nd",
-				},
-			},
-			SelectedFileFilterIndex: 1,
-			FileName:                current.FileName + ".nd",
-			DefaultExtension:        "nd",
-		})
-
-		if err != nil {
-			fmt.Println(err)
-			return
-		}
-
-		if result == "" {
-			return
-		}
-
-		TempFile := structs.SaveFile{Name: current.FileName, LastModified: files.Files[current.FileName].LastModified}
-		for _, v := range files.Files[current.FileName].Content {
-			switch v.Type {
-			case "title":
-				TempFile.Content = append(TempFile.Content, structs.SaveType{Type: v.Type, Data: v.Title.Text.Text})
-			case "paragraph":
-				TempFile.Content = append(TempFile.Content, structs.SaveType{Type: v.Type, Data: v.Paragraph.Text.Text})
-			case "draw":
-				lines := []structs.SaveDraw{}
-				for _, v := range v.Drawing.Canvas.Line {
-					lines = append(lines, structs.SaveDraw{Pos1X: int(v.Position1.X), Pos1Y: int(v.Position1.Y), Pos2X: int(v.Position2.X), Pos2Y: int(v.Position2.Y)})
-				}
-				TempFile.Content = append(TempFile.Content, structs.SaveType{Type: v.Type, Lines: lines})
-			}
-		}
-		b, err := json.Marshal(TempFile)
-		if err != nil {
-			fmt.Println(err)
-			return
-		}
-		fmt.Println(string(b))
-		ioutil.WriteFile(result, b, os.ModePerm)
+		exporting.Shortcut(files, current)
 	})
 
 	// sets the button that makes the notes to be meduim importance
@@ -168,18 +95,4 @@ func main() {
 	})
 
 	w.ShowAndRun()
-}
-
-func UpdateCard(file structs.NoteDrawFile, files *structs.Files) {
-	files.Cards[file.Name].Subtitle = fmt.Sprintf("%02d", files.Files[file.Name].LastModified.Month) + "/" + fmt.Sprintf("%02d", files.Files[file.Name].LastModified.Day) + " " + fmt.Sprintf("%02d", file.LastModified.TimeHour) + ":" + fmt.Sprintf("%02d", file.LastModified.TimeMin)
-	files.Cards[file.Name].Refresh()
-}
-
-func windowSize(part float32) fyne.Size {
-	if screenshot.NumActiveDisplays() > 0 {
-		// #0 is the main monitor
-		bounds := screenshot.GetDisplayBounds(0)
-		return fyne.NewSize(float32(bounds.Dx())*part, float32(bounds.Dy())*part)
-	}
-	return fyne.NewSize(800, 800)
 }
